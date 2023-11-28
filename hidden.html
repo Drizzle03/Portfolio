@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content />
+        <meta name="author" content />
+        <title>Dev.Pyeoun</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Custom Google font-->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet" />
+        <!-- Bootstrap icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body class="d-flex flex-column">
+        <main class="flex-shrink-0">
+            <!-- Navigation-->
+            <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+                <div class="container px-5">
+                    <a class="navbar-brand" href="index.html"><span class="fw-bolder text-primary">Dev.Pyeoun</span></a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 small fw-bolder">
+                            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="resume.html">Resume</a></li>
+                            <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+                            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                            <li class="nav-item"><a class="nav-link" href="hidden.html">AI</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- Page content-->
+            <section class="py-5">
+                <div class="container px-5">
+                    <!-- Contact form-->
+                    <div class="bg-light rounded-4 py-5 px-4 px-md-5">
+                        <div class="text-center mb-5">
+                            <h1 class="fw-bolder" lang="ko">당신의 전생을 찾아주는 AI</h1>
+                            <p class="lead fw-normal text-muted mb-0" lang="ko">이름을 입력하면 당신의 전생을 보여드립니다 (5s 소요)</p>
+                            <!-- AI 시작 -->
+                            <div class="text-center" style="gap: 2px; font-size: 0.9rem;">
+                                <div class="mb-4"></div>
+                                <input lang="ko" style="border-radius: 5px; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto; width: 40%; outline: none;" type="text" id="promptInput" placeholder="이름 입력">
+                                <button lang="ko" style="font-weight: 500 ;font: #fff; color: #696969; border: 2px solid #6e6e6e; padding: 10px 20px; border-radius: 25px; cursor: pointer; display: block; margin-left: auto; margin-right: auto; margin-bottom: 4rem; transition: all 0.3s;" id="fetchButton">전생 확인</button>
+                    
+                                <!-- Add div to display results -->
+                                <div id="output" style="margin-top: 20px; position: relative; display: flex; justify-content: center; align-items: center;">
+                                    <!-- Rotating Loader Inside the Output Div, initially hidden -->
+                                    <div class="spinner-border" role="status" style="display: none;">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                            <style>
+                                /* Button Hover and Active Effects */                    
+                                #fetchButton:hover {
+                                    background-color: #333333;
+                                    color: #fff;
+                                    border-color: #fff;
+                                }
+                    
+                                #fetchButton:active {
+                                    transform: scale(0.95);
+                                }
+                                
+                                #fetchButton:focus {
+                                    outline: none;
+                                }
+                    
+                                /* Remove Focus Border Highlight for Input */
+                                #promptInput:focus {
+                                    box-shadow: none;
+                                }
+ 
+                            </style>
+                    
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    const fetchButton = document.getElementById('fetchButton');
+                                    const promptInput = document.getElementById('promptInput');
+                                    const loader = document.querySelector('.spinner-border'); 
+                                    const outputDiv = document.getElementById('output');
+            
+                                    fetchButton.addEventListener('click', function() {
+                                        // Display the loader before the API call
+                                        loader.style.display = 'block';
+                    
+                                        // Define the API endpoint and headers
+                                        const url = "https://api.kakaobrain.com/v2/inference/karlo/t2i";
+                                        const REST_API_KEY = "3d63ef7ba92fcf9b2184512e981580a2";
+                    
+                                        const headers = {
+                                            "Authorization": `KakaoAK ${REST_API_KEY}`,
+                                            "Content-Type": "application/json"
+                                        };
+                    
+                                        // Make the API call using Fetch with the user's input
+                                        fetch(url, {
+                                            method: 'POST',
+                                            headers: headers,
+                                            body: JSON.stringify({
+                                                prompt: `${promptInput.value}, High quality, realistic, Pretty`,
+                                                negative_prompt: ""
+                                            })
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            // Hide the loader
+                                            loader.style.display = 'none';
+                                            
+                                            // Extract image URL
+                                            const imageUrl = data.images[0].image;
+                    
+                                            // Print the image to the screen
+                                            const imgElement = document.createElement('img');
+                                            imgElement.src = imageUrl;
+                                            imgElement.alt = "Resulting image from API";
+                                            imgElement.style.maxWidth = '300px';
+                    
+                                            outputDiv.innerHTML = '';
+                                            outputDiv.appendChild(imgElement);
+
+                                            // Add event listener to hide loader once image is loaded
+                                            imgElement.onload = function() {
+                                                // Hide the loader when the image is loaded
+                                                loader.style.display = 'none';
+                                            };
+                                        })
+                                        .catch(error => {
+                                            // Hide the loader in case of an error
+                                            loader.style.display = 'none';
+                                            console.error('There was an error making the API call:', error);
+                                        });
+                                    });
+                                });
+                            </script>
+                        </div>
+                        <!-- AI 끝 -->
+                        </div>
+                        <div class="row gx-5 justify-content-center">
+                            <div class="col-lg-8 col-xl-6">
+                               <!-- Modal Header -->
+                            <div class="modal-header">
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!-- Footer-->
+        <footer class="bg-white py-4 mt-auto">
+            <div class="container px-5">
+                <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                    <div class="col-auto"><div class="small m-0">Copyright &copy; Pyeoun Yuna 2023</div></div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    </body>
+</html>
